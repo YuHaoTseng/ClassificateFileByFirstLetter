@@ -43,7 +43,7 @@ if __name__ == "__main__":
     FileList = []
     for root, dirs, files in os.walk(srcPath):
         for file in files:
-            if str(file).endswith(tuple(['.avi', '.mp4'])) and (str(file)[0]).isalpha():
+            if str(file).lower().endswith(tuple(['.avi', '.mp4'])) and (str(file)[0]).isalpha():
                 FileList.append([root, file])
 
     # process FileList
