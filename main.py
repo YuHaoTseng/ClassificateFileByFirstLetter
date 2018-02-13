@@ -29,7 +29,13 @@ def moveFile(srcPath, dstPath, filename):
     dstDirPath = dstPath + '\\[' + str(filename).upper()[0] + ']'
     if not os.path.exists(dstDirPath):
         os.makedirs(dstDirPath)
-    shutil.move(srcPath + '\\' + filename, dstDirPath)
+    if not os.path.exists(dstDirPath + '\\' + filename):
+        print('moving ' + str(filename) + ' ...')
+        shutil.move(srcPath + '\\' + filename, dstDirPath)
+        print('\"' + str(filename) + '\" is moved successfully.')
+    else:
+        print('Filename: ' + str(filename) + ' is existed.')
+
 
 if __name__ == "__main__":
 
