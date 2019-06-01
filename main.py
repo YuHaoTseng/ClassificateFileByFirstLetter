@@ -26,15 +26,28 @@ def checkPath(srcPath, dstPath):
     return res
 
 def moveFile(srcPath, dstPath, filename):
-    dstDirPath = dstPath + '\\[' + str(filename).upper()[0] + ']'
+    res = False
+    if str(filename)[0].isdigit():
+        # [0-9]
+        dstDirPath = dstPath + '\\[0-9]'
+    else:
+        dstDirPath = dstPath + '\\[' + str(filename).upper()[0] + ']'
     if not os.path.exists(dstDirPath):
         os.makedirs(dstDirPath)
     if not os.path.exists(dstDirPath + '\\' + filename):
         print('moving ' + str(filename) + ' ...')
         shutil.move(srcPath + '\\' + filename, dstDirPath)
         print('\"' + str(filename) + '\" is moved successfully.')
+        res = True
     else:
         print('Filename: ' + str(filename) + ' is existed.')
+    return res
+
+def deleteFile(srcPath, filename):
+    if os.path.exists(srcPath):
+        print('removing ' + str(filename) + ' ...')
+        shutil.rmtree(srcPath)
+        print('\"' + str(srcPath) + '\" is deleted successfully.')
 
 
 if __name__ == "__main__":
@@ -54,4 +67,10 @@ if __name__ == "__main__":
 
     # process FileList
     for item in FileList:
-        moveFile(item[0], dstPath, item[1])
+
+        # move file from src to dst
+        res = moveFile(item[0], dstPath, item[1])
+
+        # delete src folder if success
+        if res:
+            deleteFile(item[0], item[1])
