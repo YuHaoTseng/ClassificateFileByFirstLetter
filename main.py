@@ -25,30 +25,31 @@ def checkPath(srcPath, dstPath):
         print('destination path: \'' + dstPath + '\' is invalid.')
     return res
 
-def moveFile(srcPath, dstPath, filename):
-    res = False
-    if str(filename)[0].isdigit():
-        # [0-9]
-        dstDirPath = dstPath + '\\[0-9]'
-    else:
-        dstDirPath = dstPath + '\\[' + str(filename).upper()[0] + ']'
-    if not os.path.exists(dstDirPath):
-        os.makedirs(dstDirPath)
-    if not os.path.exists(dstDirPath + '\\' + filename):
-        print('moving ' + str(filename) + ' ...')
-        shutil.move(srcPath + '\\' + filename, dstDirPath)
-        print('\"' + str(filename) + '\" is moved successfully.')
-        res = True
-    else:
-        print('Filename: ' + str(filename) + ' is existed.')
+def moveFile(srcPath, dstPath, filenames):
+    res = True
+    for filename in filenames:
+        if str(filename)[0].isdigit():
+            # [0-9]
+            dstDirPath = dstPath + '\\[0-9]'
+        else:
+            dstDirPath = dstPath + '\\[' + str(filename).upper()[0] + ']'
+        if not os.path.exists(dstDirPath):
+            os.makedirs(dstDirPath)
+        if not os.path.exists(dstDirPath + '\\' + filename):
+            print('moving ' + str(filename) + ' ...')
+            shutil.move(srcPath + '\\' + filename, dstDirPath)
+            print('\"' + str(filename) + '\" is moved successfully.')
+        else:
+            print('Filename: ' + str(filename) + ' is existed.')
+            res = False
     return res
 
-def deleteFile(srcPath, filename):
+def deleteFile(srcPath, filenames):
     if os.path.exists(srcPath):
-        print('removing ' + str(filename) + ' ...')
-        shutil.rmtree(srcPath)
-        print('\"' + str(srcPath) + '\" is deleted successfully.')
-
+        if filenames == None:
+            print('removing ' + str(srcPath) + ' ...')
+            shutil.rmtree(srcPath)
+            print('\"' + str(srcPath) + '\" is deleted successfully.')
 
 if __name__ == "__main__":
 
@@ -62,15 +63,25 @@ if __name__ == "__main__":
     FileList = []
     for root, dirs, files in os.walk(srcPath):
         for file in files:
-            if str(file).lower().endswith(tuple(['.avi', '.mp4'])) and (str(file)[0]).isalpha():
-                FileList.append([root, file])
+            if str(file).lower().endswith(tuple(['.avi', '.mp4'])):
+                Temp = None
+                for item in FileList:
+                    if item[0] == root:
+                        Temp = item
+                        break
+                if Temp == None:
+                    FileList.append([root, file])
+                else:
+                    Temp.append(file)
 
     # process FileList
     for item in FileList:
-
         # move file from src to dst
-        res = moveFile(item[0], dstPath, item[1])
+        res = moveFile(item[0], dstPath, item[1:])
 
         # delete src folder if success
         if res:
-            deleteFile(item[0], item[1])
+            if item[0] == srcPath:
+                deleteFile(item[0], item[1:])
+            else:
+                deleteFile(item[0], None)
